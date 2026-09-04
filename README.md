@@ -1,5 +1,8 @@
 # 🎓 First App — تعلّم بالعربي والإنجليزي · Learn in Arabic & English
 
+> ⭐ **ادعمنا بنجمة:** إذا أعجبك المشروع أو استفدت منه، لا تنسَ أن تمنحنا ⭐ نجمة — دعمك يصنع فرقاً كبيراً!
+> ⭐ **Give us a star:** if you like this project or learned something from it, please give us a ⭐ star — your support means a lot!
+
 > **The Why:** هذا أول تطبيق تعليمي تفاعلي لك — يحوّل درسك الأصلي عن Git و GitHub و VS Code إلى تجربة ويب ثنائية اللغة (عربي/إنجليزي) مع اختبار تفاعلي وحاسبة درجات، ليتعلم المبتدئ بنفس الفكرة من اللغتين.
 >
 > **The Why (EN):** your first interactive educational app — it upgrades your original Git / GitHub / VS Code lesson into a bilingual (AR/EN) web experience with a quiz and a grade calculator, so beginners learn the same idea in both languages.
