@@ -1,36 +1,571 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="ar" dir="rtl" data-lang="ar">
 <head>
-<title>Course about GIT</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تعلّم بالعربي والإنجليزي | Learn in Arabic &amp; English</title>
+<style>
+  /* ============================================================
+     First App — Learn in Arabic & English
+     صفحة تعليمية تفاعلية ثنائية اللغة (عربي / English)
+     An interactive bilingual educational page
+     ============================================================ */
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280;
+    --brand:#2563eb; --brand2:#7c3aed; --ok:#16a34a; --bad:#dc2626;
+    --line:#e5e7eb; --code-bg:#0f172a; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:"Segoe UI", Tahoma, "Noto Sans Arabic", Arial, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.8;
+    padding-bottom:3rem;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 1rem;}
 
+  /* ---- language visibility rules ------------------------------ */
+  html[data-lang="ar"] .en{display:none;}
+  html[data-lang="en"] .ar{display:none;}
+
+  /* ---- header ------------------------------------------------ */
+  header{
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    color:#fff; padding:2.2rem 1rem 2rem; text-align:center;
+  }
+  header h1{font-size:1.7rem; margin-bottom:.4rem;}
+  header p{opacity:.95; font-size:1.05rem;}
+  .lang-btn{
+    margin-top:1rem; background:#fff; color:var(--brand); border:none;
+    padding:.55rem 1.3rem; border-radius:999px; font-weight:700; cursor:pointer;
+    font-size:.95rem; box-shadow:0 4px 10px rgba(0,0,0,.15);
+  }
+  .lang-btn:hover{transform:translateY(-1px);}
+
+  /* ---- tabs --------------------------------------------------- */
+  nav{background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5;}
+  nav .wrap{display:flex; gap:.3rem; overflow-x:auto;}
+  .tab{
+    background:none; border:none; padding:.8rem 1.1rem; font-size:.98rem;
+    cursor:pointer; color:var(--muted); font-weight:600; white-space:nowrap;
+    border-bottom:3px solid transparent; font-family:inherit;
+  }
+  .tab.active{color:var(--brand); border-bottom-color:var(--brand);}
+  .tab:hover{color:var(--brand);}
+
+  /* ---- sections & cards -------------------------------------- */
+  section{display:none; margin-top:1.6rem;}
+  section.active{display:block;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:1.4rem 1.5rem; margin-bottom:1.2rem;}
+  h2{color:var(--brand); margin-bottom:.7rem; font-size:1.35rem;}
+  h3{margin:.8rem 0 .4rem;}
+  p{margin:.35rem 0;}
+  .muted{color:var(--muted); font-size:.95rem;}
+  ul,ol{margin:.4rem 0 .8rem 1.4rem;}
+  li{margin:.25rem 0;}
+
+  table{width:100%; border-collapse:collapse; margin:.8rem 0;}
+  th,td{border:1px solid var(--line); padding:.55rem .7rem; text-align:start; font-size:.98rem;}
+  th{background:#eef2ff; color:var(--brand);}
+
+  code,pre{font-family:Consolas,"Courier New",monospace;}
+  code{background:#eef2ff; color:var(--brand); padding:.05rem .4rem; border-radius:6px; font-size:.92em;}
+  pre{
+    background:var(--code-bg); color:var(--code-ink); padding:1rem 1.1rem;
+    border-radius:12px; overflow-x:auto; font-size:.9rem; line-height:1.6;
+    direction:ltr; text-align:left; margin:.7rem 0;
+  }
+  pre .cm{color:#94a3b8;}  /* comment color inside code */
+  pre .kw{color:#c084fc;}  /* keyword color */
+
+  .badge{display:inline-block; background:#eef2ff; color:var(--brand); border-radius:999px;
+         padding:.1rem .7rem; font-size:.8rem; font-weight:700; margin-inline-start:.4rem;}
+
+  /* ---- quiz ------------------------------------------------ */
+  .quiz-q{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.1rem 1.3rem; margin-bottom:1rem;}
+  .quiz-q h4{margin-bottom:.6rem;}
+  .quiz-opt{display:block; width:100%; text-align:start; background:#f9fafb; border:1.5px solid var(--line);
+            border-radius:10px; padding:.6rem .9rem; margin:.35rem 0; cursor:pointer; font-family:inherit; font-size:.97rem;}
+  .quiz-opt:hover{border-color:var(--brand);}
+  .quiz-opt.correct{background:#dcfce7; border-color:var(--ok);}
+  .quiz-opt.wrong{background:#fee2e2; border-color:var(--bad);}
+  .quiz-opt:disabled{cursor:default; opacity:.95;}
+  .why{display:none; margin-top:.5rem; padding:.6rem .9rem; border-radius:8px; background:#fffbeb; border:1px solid #fde68a; font-size:.95rem;}
+  .why.show{display:block;}
+  .score{font-weight:800; color:var(--brand); font-size:1.2rem;}
+
+  /* ---- grade calculator ----------------------------------- */
+  .calc-grid{display:flex; gap:1.2rem; flex-wrap:wrap;}
+  .calc-panel{flex:1 1 340px;}
+  input[type=text]{
+    width:100%; padding:.65rem .8rem; border:1.5px solid var(--line); border-radius:10px;
+    font-family:inherit; font-size:1rem; direction:ltr; text-align:left;
+  }
+  .btn{
+    background:var(--brand); color:#fff; border:none; padding:.65rem 1.4rem;
+    border-radius:10px; font-size:1rem; font-weight:700; cursor:pointer; margin-top:.7rem; font-family:inherit;
+  }
+  .btn:hover{background:#1d4ed8;}
+  .result-box{margin-top:1rem; padding:1rem; border-radius:12px; font-weight:700; font-size:1.15rem;}
+  .result-box.good{background:#dcfce7; color:var(--ok);}
+  .result-box.mid{background:#fef9c3; color:#854d0e;}
+  .result-box.bad{background:#fee2e2; color:var(--bad);}
+
+  footer{margin-top:2.5rem; text-align:center; color:var(--muted); font-size:.92rem; border-top:1px solid var(--line); padding-top:1.5rem;}
+  footer a{color:var(--brand); text-decoration:none;}
+</style>
 </head>
 <body>
-<h1>استخدام Git source control  في محرر الشفرة VS Code</h1>
+<header>
+  <div class="wrap">
+    <h1>
+      <span class="ar">🎓 تعلّم بالعربي والإنجليزي</span>
+      <span class="en">🎓 Learn in Arabic &amp; English</span>
+    </h1>
+    <p>
+      <span class="ar">أول تطبيق تعليمي تفاعلي لك — Git, GitHub و VS Code بأسلوب بسيط</span>
+      <span class="en">Your first interactive educational app — Git, GitHub &amp; VS Code, the simple way</span>
+    </p>
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">
+      English
+    </button>
+  </div>
+</header>
 
-<p>
-    تمهيد: عندما تسمع المصطلحات التالي Source control او version control او backing up، مهما اخترت تسميتك له فإن المقصود هو : تتبع الكود، والملفات طوال الوقت.
-    هنا مسميات برامج (git, GitHub, and VSCode) نستطيع ان نوضحها بالجدول التالي:
-         git    هو برنامج لادارة source code
-         GitHub    يستضيف نسخة من ذلك الكود و repository online اي انه مستودع على الانترنت
-         Visual Studio code    يجعل عملية (process) استخدام Git  و GitHub سهله
-    وهنا نوضح ماذكرنا بخطوات. (تجاوز الجزء التالي اذا كان Git على الجهاز)
-    وهنا نفترض ان نزلت Git  على جهازك
-    ملاحظة: للتأكد من ان Git موجود على جهازك ام لا . في ماك اذهب الى "Terminal"، او "command prompt أو GitBash" ثم اكتب الامر "git version" وسوف يخبرك بأي اصدرا اذا كان موجودا، او سوف يعطيك تحذير ان git امر غير معروف. وبإمكانك ان تتبع الخطوات لتنزيله من الروابط التالية
-    وينمكنك تنزيل git من هذا الرابط : https://git-scm.com/download/win
-    ولماك والانظمة الاخرى من خلال الرابط: https://git-scm.com/downloads
-     
-    ولكي تعرف خطوات انزال الـ Git بإمكانك زيارة الرابط التالي:
-    https://github.com/git-guides/install-git
-    والخطوة الاولى لاستخدام VSCode مع Git هو initialize a folder لكي نعكس مستودعنا على الانترنت (repository) وهنا موقع E:/prog_web_projs_1445h
-    ثم يفتح الواجهه ثم اختار (source control) من على الجهه اليسرى ، وكما يظهر    هنالك ملفات منها html، وجافا…
-   
-مقال جيد
-</p>
-<strong>Perfect!!</strong> Did well in your work</body></br> and will give some warning
-<strong>Perfect!!</strong> this is the second</body></br> and will give some Danger
+<nav>
+  <div class="wrap">
+    <button class="tab active" data-tab="lesson" onclick="openTab('lesson')">
+      <span class="ar">📖 الدرس</span><span class="en">📖 Lesson</span>
+    </button>
+    <button class="tab" data-tab="quiz" onclick="openTab('quiz')">
+      <span class="ar">❓ اختبر نفسك</span><span class="en">❓ Quiz</span>
+    </button>
+    <button class="tab" data-tab="calc" onclick="openTab('calc')">
+      <span class="ar">🧮 حاسبة الدرجات</span><span class="en">🧮 Grade Calculator</span>
+    </button>
+  </div>
+</nav>
 
+<main class="wrap">
+
+  <!-- ================== SECTION 1 : LESSON ================== -->
+  <section id="lesson" class="active">
+    <div class="card">
+      <h2>
+        <span class="ar">1) ما هو Git و GitHub و VS Code؟</span>
+        <span class="en">1) What are Git, GitHub and VS Code?</span>
+      </h2>
+      <p class="ar">
+        عندما تسمع مصطلحات مثل <strong>Source Control</strong> أو <strong>Version Control</strong>
+        أو <strong>النسخ الاحتياطي للكود</strong> — مهما كان الاسم، فالمقصود هو شيء واحد:
+        <strong>تتبّع الكود والملفات طوال الوقت</strong> حتى تعرف مَن غيّر ماذا ومتى، وتقدر ترجع لأي
+        نسخة سابقة. إليك الفرق بين البرامج الثلاثة:
+      </p>
+      <p class="en">
+        When you hear terms like <strong>Source Control</strong>, <strong>Version Control</strong>,
+        or <strong>code backup</strong> — whatever you call it, it means one thing:
+        <strong>tracking your code and files over time</strong>, so you know who changed what and
+        when, and you can return to any previous version. Here is how the three tools differ:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th><span class="ar">البرنامج</span><span class="en">Tool</span></th>
+            <th><span class="ar">ما هو؟</span><span class="en">What is it?</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Git</strong></td>
+            <td>
+              <span class="ar">برنامج لإدارة الـ Source Code على جهازك (تتبّع التغييرات محلياً)</span>
+              <span class="en">A tool that manages your source code on your machine (tracks changes locally)</span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>GitHub</strong></td>
+            <td>
+              <span class="ar">موقع يستضيف نسخة من كودك في <code>repository</code> على الإنترنت</span>
+              <span class="en">A website that hosts a copy of your code in an online <code>repository</code></span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>VS Code</strong></td>
+            <td>
+              <span class="ar">محرّر الشفرة الذي يجعل استخدام Git و GitHub سهلاً وبأزرار</span>
+              <span class="en">The code editor that makes using Git &amp; GitHub easy with buttons</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>
+        <span class="ar">2) هل Git مثبّت على جهازك؟</span>
+        <span class="en">2) Is Git installed on your machine?</span>
+      </h3>
+      <ol>
+        <li class="ar">افتح <strong>Terminal</strong> (على ماك) أو <strong>Command Prompt</strong> أو <strong>Git Bash</strong> (على ويندوز)</li>
+        <li class="en">Open <strong>Terminal</strong> (macOS) or <strong>Command Prompt</strong> / <strong>Git Bash</strong> (Windows)</li>
+        <li class="ar">اكتب الأمر: <code>git version</code> واضغط Enter</li>
+        <li class="en">Type the command: <code>git version</code> and press Enter</li>
+      </ol>
+      <p class="ar">
+        إذا ظهر رقم الإصدار فـ Git موجود ✅، وإذا ظهرت رسالة "أمر غير معروف" فحمّله من
+        <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a>
+        واتبع <a href="https://github.com/git-guides/install-git" target="_blank" rel="noopener">دليل التثبيت الرسمي</a>.
+      </p>
+      <p class="en">
+        If a version number appears, Git is installed ✅. If you see “command not found”, download it from
+        <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a>
+        and follow the <a href="https://github.com/git-guides/install-git" target="_blank" rel="noopener">official install guide</a>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>
+        <span class="ar">3) أول خطوة في VS Code: تهيئة مجلد (Initialize)</span>
+        <span class="en">3) First step in VS Code: initialize a folder</span>
+      </h3>
+      <p class="ar">لكي نربط مشروعنا بنظام التتبّع، نفتح المجلد في VS Code ثم:</p>
+      <p class="en">To connect your project to version control, open the folder in VS Code and then:</p>
+      <ol>
+        <li class="ar">افتح مجلد مشروعك: <code>File ▸ Open Folder</code></li>
+        <li class="en">Open your project folder: <code>File ▸ Open Folder</code></li>
+        <li class="ar">اضغط أيقونة <strong>Source Control</strong> في الشريط الجانبي الأيسر</li>
+        <li class="en">Click the <strong>Source Control</strong> icon in the left sidebar</li>
+        <li class="ar">اضغط <strong>Initialize Repository</strong> — وبهذا يبدأ Git بتتبّع ملفاتك</li>
+        <li class="en">Click <strong>Initialize Repository</strong> — Git now tracks your files</li>
+      </ol>
+      <p class="ar muted">
+        💡 ستظهر ملفاتك في قائمة التغييرات. اكتب رسالة (Commit Message) تصف تعديلك ثم اضغط
+        <strong>Commit</strong>، وعندما تجهز انشر مشروعك بزر <strong>Publish Branch</strong> إلى GitHub.
+      </p>
+      <p class="en muted">
+        💡 Your files will appear in the Changes list. Write a Commit Message describing your edit, click
+        <strong>Commit</strong>, and when you are ready publish your project to GitHub with
+        <strong>Publish Branch</strong>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>
+        <span class="ar">4) الأوامر الأساسية (نفسها في أي نظام)</span>
+        <span class="en">4) Core commands (the same everywhere)</span>
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th><span class="ar">ماذا تفعل؟</span><span class="en">What it does</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>git init</code></td>
+            <td><span class="ar">تبدأ التتبّع في هذا المجلد</span><span class="en">Starts tracking in this folder</span></td></tr>
+          <tr><td><code>git add .</code></td>
+            <td><span class="ar">تضيف كل الملفات إلى "منطقة التجهيز"</span><span class="en">Stages all files for the next commit</span></td></tr>
+          <tr><td><code>git commit -m "رسالتك"</code></td>
+            <td><span class="ar">تحفظ نقطة (Snapshot) من الكود برسالة</span><span class="en">Saves a snapshot of the code with a message</span></td></tr>
+          <tr><td><code>git push</code></td>
+            <td><span class="ar">ترفع نقاطك المحفوظة إلى GitHub</span><span class="en">Uploads your commits to GitHub</span></td></tr>
+          <tr><td><code>git log</code></td>
+            <td><span class="ar">تعرض تاريخ كل التعديلات</span><span class="en">Shows the full history of changes</span></td></tr>
+        </tbody>
+      </table>
+      <p class="ar muted">🏆 أتقنت الأساسيات! الآن انتقل لتبويب <strong>اختبر نفسك</strong> وثبّت المعلومة.</p>
+      <p class="en muted">🏆 You got the basics! Now move to the <strong>Quiz</strong> tab and lock it in.</p>
+    </div>
+  </section>
+
+  <!-- ================== SECTION 2 : QUIZ ================== -->
+  <section id="quiz">
+    <div class="card">
+      <h2>
+        <span class="ar">❓ اختبر نفسك — 4 أسئلة سريعة</span>
+        <span class="en">❓ Quick quiz — 4 questions</span>
+      </h2>
+      <p class="ar muted">اضغط على الإجابة الصحيحة، وستظهر لك نتيجة فورية مع الشرح.</p>
+      <p class="en muted">Click the correct answer — you get instant feedback with an explanation.</p>
+      <div id="quizBox"></div>
+      <p class="score" id="quizScore" style="margin-top:1rem;"></p>
+      <button class="btn" onclick="resetQuiz()">
+        <span class="ar">🔄 إعادة الاختبار</span>
+        <span class="en">🔄 Try again</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================== SECTION 3 : GRADE CALCULATOR ================== -->
+  <section id="calc">
+    <div class="card">
+      <h2>
+        <span class="ar">🧮 حاسبة الدرجات التفاعلية</span>
+        <span class="en">🧮 Interactive Grade Calculator</span>
+      </h2>
+      <p class="ar">
+        هذه الحاسبة هي نفس فكرة ملف <code>grade_calculator.py</code> الموجود في المستودع، لكنها
+        تعمل في المتصفح. أدخل الدرجات (مفصولة بفواصل) واضغط احسب — ولاحظ أن المنطق نفسه في اللغتين!
+      </p>
+      <p class="en">
+        This calculator is the same idea as the <code>grade_calculator.py</code> file in this
+        repository, but it runs in the browser. Enter grades (comma-separated) and press
+        Calculate — notice the logic is identical in both languages!
+      </p>
+
+      <div class="calc-grid">
+        <div class="calc-panel">
+          <label for="gradesInput">
+            <span class="ar">الدرجات (مثال: 85, 78, 92)</span>
+            <span class="en">Grades (example: 85, 78, 92)</span>
+          </label>
+          <input type="text" id="gradesInput" value="85, 78, 92" placeholder="85, 78, 92">
+          <br>
+          <button class="btn" onclick="calcGrades()">
+            <span class="ar">💻 احسب</span>
+            <span class="en">💻 Calculate</span>
+          </button>
+          <div id="calcResult" class="result-box" style="display:none;"></div>
+        </div>
+
+        <div class="calc-panel">
+          <h3>
+            <span class="ar">📊 جدول التقديرات</span>
+            <span class="en">📊 Grading scale</span>
+          </h3>
+          <table>
+            <thead><tr><th>Average</th><th>Grade</th></tr></thead>
+            <tbody>
+              <tr><td>90 أو أكثر / or more</td><td>A</td></tr>
+              <tr><td>80 – 89</td><td>B</td></tr>
+              <tr><td>70 – 79</td><td>C</td></tr>
+              <tr><td>60 – 69</td><td>D</td></tr>
+              <tr><td>أقل من 60 / less than 60</td><td>Fail</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1rem;">
+        <span class="ar">🐍 المنطق نفسه في بايثون (من مستودعك)</span>
+        <span class="en">🐍 The same logic in Python (from your repo)</span>
+      </h3>
+      <pre><code><span class="cm"># grade_calculator.py — نفس الفكرة تماماً</span>
+<span class="cm"># grade_calculator.py — exactly the same idea</span>
+<span class="kw">def</span> calculate_average(grades):
+    <span class="kw">return</span> sum(grades) / len(grades)
+
+<span class="kw">def</span> determine_letter_grade(average):
+    <span class="kw">if</span> average &gt;= 90: <span class="kw">return</span> <span class="cm">'A'</span>
+    <span class="kw">elif</span> average &gt;= 80: <span class="kw">return</span> <span class="cm">'B'</span>
+    <span class="kw">elif</span> average &gt;= 70: <span class="kw">return</span> <span class="cm">'C'</span>
+    <span class="kw">elif</span> average &gt;= 60: <span class="kw">return</span> <span class="cm">'D'</span>
+    <span class="kw">else</span>: <span class="kw">return</span> <span class="cm">'Fail'</span></code></pre>
+      <p class="ar muted">
+        💡 <strong>تعلّم ترجمة الأفكار بين اللغات:</strong> الـ <code>sum</code> في بايثون يقابله
+        <code>reduce</code> أو حلقة في جافاسكريبت، و<code>if/elif</code> يقابلها <code>if/else if</code>.
+      </p>
+      <p class="en muted">
+        💡 <strong>Learn to translate ideas between languages:</strong> Python's <code>sum</code> maps to
+        <code>reduce</code> or a loop in JavaScript, and <code>if/elif</code> maps to <code>if/else if</code>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <span class="ar">
+        © 2026 <strong>عبدربه العتيبي (Abdrabuh Alotaibi)</strong> · abdrabuha@outlook.com —
+        مشروع تعليمي مفتوح المصدر برخصة MIT.
+      </span>
+      <span class="en">
+        © 2026 <strong>Abdrabuh Alotaibi (عبدربه العتيبي)</strong> · abdrabuha@outlook.com —
+        An open-source educational project under the MIT License.
+      </span>
+    </p>
+    <p>
+      <span class="ar">💡 جرّب تغيير اللغة من الزر بالأعلى، وشاهد الصفحة تنقلب يميناً ويساراً تلقائياً!</span>
+      <span class="en">💡 Try the language button above — watch the whole page flip RTL/LTR automatically!</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   First App — JavaScript
+   ============================================================ */
+
+let lang = localStorage.getItem("firstAppLang") || "ar";  // حفظ اختيار المستخدم
+const QUESTIONS = [
+  {
+    ar: "ما هو Git بالضبط؟",
+    en: "What exactly is Git?",
+    opts: {
+      ar: ["متصفح إنترنت لفتح المواقع", "برنامج لتتبّع وإدارة الكود محلياً على جهازك", "موقع لاستضافة الصور"],
+      en: ["A web browser for opening sites", "A tool that tracks and manages code locally on your machine", "A photo hosting website"]
+    },
+    correct: 1,
+    why: {
+      ar: "Git برنامج Version Control يعمل على جهازك ويتتبّع كل تغيير في الكود.",
+      en: "Git is a version-control tool that runs on your machine and tracks every change in your code."
+    }
+  },
+  {
+    ar: "ما الفرق بين GitHub و Git؟",
+    en: "What is the difference between GitHub and Git?",
+    opts: {
+      ar: ["لا يوجد فرق — نفس الشيء", "GitHub موقع يستضيف نسخة من كودك على الإنترنت، أما Git فبرنامج محلي", "Git موقع على الإنترنت و GitHub برنامج محلي"],
+      en: ["There is no difference — they are the same", "GitHub is a website that hosts your code online, while Git is a local tool", "Git is a website and GitHub is a local tool"]
+    },
+    correct: 1,
+    why: {
+      ar: "Git = أداة التتبّع على جهازك، و GitHub = مستودع (Repository) سحابي لنفس الكود.",
+      en: "Git is the tracking tool on your machine; GitHub is the cloud repository for that code."
+    }
+  },
+  {
+    ar: "أي أمر يعرض تاريخ كل التعديلات؟",
+    en: "Which command shows the full history of changes?",
+    opts: {
+      ar: ["git push", "git init", "git log"],
+      en: ["git push", "git init", "git log"]
+    },
+    correct: 2,
+    why: {
+      ar: "git log يعرض قائمة الـ Commits كاملة، بينما push يرفع و init يبدأ التتبّع.",
+      en: "git log lists all commits; push uploads them and init starts tracking."
+    }
+  },
+  {
+    ar: "في VS Code، أين تضغط لتهيئة Repository جديد؟",
+    en: "In VS Code, where do you click to initialize a new repository?",
+    opts: {
+      ar: ["أيقونة Source Control ثم Initialize Repository", "قائمة File ثم Print", "أيقونة Extensions"],
+      en: ["The Source Control icon, then Initialize Repository", "The File menu, then Print", "The Extensions icon"]
+    },
+    correct: 0,
+    why: {
+      ar: "Source Control في الشريط الجانبي يعرض زر Initialize Repository لبدء تتبّع المجلد.",
+      en: "The Source Control icon in the sidebar has the Initialize Repository button to start tracking the folder."
+    }
+  }
+];
+let answeredCount = 0;
+const QUIZ_TOTAL = QUESTIONS.length;
+
+
+function tr(arText, enText) { return lang === "ar" ? arText : enText; }
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.dataset.lang = lang;
+  document.getElementById("langBtn").textContent = lang === "ar" ? "English" : "العربية";
+  renderQuiz();
+}
+
+function toggleLang() {
+  lang = lang === "ar" ? "en" : "ar";
+  try { localStorage.setItem("firstAppLang", lang); } catch (e) {}
+  applyLang();
+}
+
+function openTab(name) {
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+  document.getElementById(name).classList.add("active");
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === name);
+  });
+}
+
+/* ---------- Quiz ---------- */
+function renderQuiz() {
+  const box = document.getElementById("quizBox");
+  box.innerHTML = "";
+  answeredCount = 0;
+  document.getElementById("quizScore").textContent = "";
+
+  QUESTIONS.forEach((q, qi) => {
+    const card = document.createElement("div");
+    card.className = "quiz-q";
+    const h = document.createElement("h4");
+    h.textContent = (qi + 1) + ". " + q[lang];
+    card.appendChild(h);
+
+    q.opts[lang].forEach((opt, oi) => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-opt";
+      btn.textContent = opt;
+      btn.onclick = () => answerQuestion(qi, oi);
+      card.appendChild(btn);
+    });
+
+    const why = document.createElement("div");
+    why.className = "why";
+    why.id = "why-" + qi;
+    why.textContent = q.why[lang];
+    card.appendChild(why);
+    box.appendChild(card);
+  });
+}
+
+function answerQuestion(qi, chosen) {
+  const q = QUESTIONS[qi];
+  const card = document.getElementById("quizBox").children[qi];
+  const opts = card.querySelectorAll(".quiz-opt");
+  if (opts[chosen].disabled) return;
+
+  opts.forEach(o => { o.disabled = true; });
+  const correct = chosen === q.correct;
+  opts[chosen].classList.add(correct ? "correct" : "wrong");
+  opts[q.correct].classList.add("correct");          // أظهر الإجابة الصحيحة دائماً
+  document.getElementById("why-" + qi).classList.add("show");
+  answeredCount++;
+
+  const scoreEl = document.getElementById("quizScore");
+  scoreEl.textContent = tr("نتيجتك: ", "Your score: ") + answeredCount + " / " + QUIZ_TOTAL;
+  if (answeredCount === QUIZ_TOTAL) {
+    scoreEl.textContent += "  " + tr("🎉 أحسنت!", "🎉 Well done!");
+  }
+}
+
+function resetQuiz() { renderQuiz(); }
+
+/* ---------- Grade Calculator ---------- */
+function calcGrades() {
+  const raw = document.getElementById("gradesInput").value;
+  const grades = raw.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+  const out = document.getElementById("calcResult");
+  out.style.display = "block";
+
+  if (grades.length === 0) {
+    out.className = "result-box bad";
+    out.textContent = tr("⚠️ أدخل أرقاماً صحيحة مفصولة بفواصل.", "⚠️ Enter valid numbers separated by commas.");
+    return;
+  }
+
+  const average = grades.reduce((a, b) => a + b, 0) / grades.length;
+  let letter;
+  if (average >= 90) letter = "A";
+  else if (average >= 80) letter = "B";
+  else if (average >= 70) letter = "C";
+  else if (average >= 60) letter = "D";
+  else letter = "Fail";
+
+  out.className = "result-box " + (letter === "A" || letter === "B" ? "good" : letter === "Fail" ? "bad" : "mid");
+  const avgText = average % 1 === 0 ? average : average.toFixed(2);
+  out.textContent = tr(
+    "المتوسط: " + avgText + " — التقدير: " + letter,
+    "Average: " + avgText + " — Letter grade: " + letter
+  );
+}
+
+applyLang();   // فعّل اللغة المحفوظة (أو العربية افتراضياً)
+</script>
 </body>
-
-
 </html>
+
