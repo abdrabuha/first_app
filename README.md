@@ -8,6 +8,8 @@
 
 ## 🚀 طريقة التشغيل · How to run
 
+**🌐 جرّبه مباشرة · Try it live:** [abdrabuha.github.io/first_app](https://abdrabuha.github.io/first_app/)
+
 **الويب / Web** — افتح `index.html` مباشرة في أي متصفح (بدون إنترنت أو سيرفر):
 ```bash
 start index.html
